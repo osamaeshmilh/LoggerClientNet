@@ -8,6 +8,7 @@
     <PackageTags>logger</PackageTags>
     <RepositoryUrl>https://github.com/osamaeshmilh/LoggerClientNet</RepositoryUrl>
     <PackageId>SDDP-LoggerClientNet</PackageId>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
