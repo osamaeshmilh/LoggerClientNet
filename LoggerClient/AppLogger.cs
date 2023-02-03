@@ -2,6 +2,7 @@
 
 namespace LoggerClient
 {
+    //key oy2gh66m7e3jz4b6yxsafb4y2gljvqyenaidge6w4t6nmi
     public class AppLogger
     {
         public async Task LogAsync(string text)
