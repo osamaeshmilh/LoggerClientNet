@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -9,5 +9,9 @@
     <RepositoryUrl>https://github.com/osamaeshmilh/LoggerClientNet</RepositoryUrl>
     <PackageId>SDDP-LoggerClientNet</PackageId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Confluent.Kafka" Version="2.0.2" />
+  </ItemGroup>
 
 </Project>
