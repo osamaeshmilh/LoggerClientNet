@@ -9,25 +9,6 @@ namespace LoggerClient
 {
     //key oy2gh66m7e3jz4b6yxsafb4y2gljvqyenaidge6w4t6nmi
 
-
-    public class AppLogger
-    {
-        public async Task LogAsync(string text)
-        {
-            var config = new ProducerConfig
-            {
-                BootstrapServers = "host1:9092",
-                
-            };
-
-            using (var producer = new ProducerBuilder<Null, string>(config).Build())
-            {
-                var result = await producer.ProduceAsync("weblog", new Message<Null, string> { Value = "a log message" });
-            }
-            Console.WriteLine(text);
-        }
-    }
-
     public class HttpLoggingMiddleware
     {
         private readonly RequestDelegate _next;
@@ -61,6 +42,20 @@ namespace LoggerClient
             if (response != null )
             {
                 _logger.LogInformation("HTTP Response {StatusCode} {Uri} {Content}", context.Response.StatusCode, request.Path, response);
+            }
+
+            var config = new ProducerConfig
+            {
+                BootstrapServers = "cluster.playground.cdkt.io:9092",
+                SecurityProtocol = SecurityProtocol.SaslSsl,
+                SaslMechanism = SaslMechanism.Plain,
+                SaslUsername = "shu",
+                SaslPassword = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1dGguY29uZHVrdG9yLmlvIiwic291cmNlQXBwbGljYXRpb24iOiJhZG1pbiIsInVzZXJNYWlsIjpudWxsLCJwYXlsb2FkIjp7InZhbGlkRm9yVXNlcm5hbWUiOiJzaHUiLCJvcmdhbml6YXRpb25JZCI6NzE0MjgsInVzZXJJZCI6bnVsbCwiZm9yRXhwaXJhdGlvbkNoZWNrIjoiMTUzYzViNGQtZmE4YS00MmZkLTljOTEtZDA0MThiMTQ4MTI3In19.Zxwh0E605zOLOLNxOEUV_tLXX4XD1FB4AHxPOpTrz-o"
+            };
+
+            using (var producer = new ProducerBuilder<Null, string>(config).Build())
+            {
+                var result = await producer.ProduceAsync("logs", new Message<Null, string> { Value = "a log message" });
             }
         }
     }
