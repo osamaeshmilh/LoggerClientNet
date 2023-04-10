@@ -15,13 +15,12 @@ To run package you need:
 
 * Set Token and Application code in Startup.cs. Example:
   ```sh
-  public void ConfigureServices(IServiceCollection services)
-  {
-    services.AddHttpKafkaLogger(config =>
-    {
-      config.ApplicationCode = "your-application-code";
-      config.ApplicationToken = "your-application-token";
-    });
-
-  }
+  builder.Services.AddSingleton<LoggerClientConfiguration>(
+  new LoggerClientConfiguration(
+    "yourAppToken",
+    "localhost:9092",
+    "http-logs"));
+  builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
+  
+  app.UseHttpLoggingMiddleware();
   ```
