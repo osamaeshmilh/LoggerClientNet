@@ -20,20 +20,18 @@ namespace LoggerClient.Middleware
         public async Task InvokeAsync(HttpContext context)
         {
             var logEntry = new LogEntry();
-            var originalBodyStream = context.Response.Body;
-            // var requestBodyStream = new MemoryStream();
-            // var responseBodyStream = new MemoryStream();
 
-            // context.Request.Body.CopyTo(requestBodyStream);
-            // requestBodyStream.Seek(0, SeekOrigin.Begin);
-            // context.Response.Body = responseBodyStream;
+            var requestBodyStream = new MemoryStream();
+            await context.Request.Body.CopyToAsync(requestBodyStream);
+            requestBodyStream.Seek(0, SeekOrigin.Begin);
+
+            var originalBodyStream = context.Response.Body;
+            using var responseBodyStream = new MemoryStream();
+            context.Response.Body = responseBodyStream;
 
             var stopwatch = Stopwatch.StartNew();
             await _next(context);
             stopwatch.Stop();
-            //
-            // responseBodyStream.Seek(0, SeekOrigin.Begin);
-            // await responseBodyStream.CopyToAsync(originalBodyStream);
 
             logEntry.Timestamp = DateTime.UtcNow;
             logEntry.HttpMethod = context.Request.Method;
@@ -46,12 +44,18 @@ namespace LoggerClient.Middleware
             logEntry.ResponseHeaders = JsonConvert.SerializeObject(context.Response.Headers);
             logEntry.RequestCookies = JsonConvert.SerializeObject(context.Request.Cookies);
             logEntry.ResponseCookies = JsonConvert.SerializeObject(context.Response.Cookies);
-            
-            // requestBodyStream.Seek(0, SeekOrigin.Begin);
-            // logEntry.RequestBody = new StreamReader(requestBodyStream).ReadToEnd();
-            //
-            // responseBodyStream.Seek(0, SeekOrigin.Begin);
-            // logEntry.ResponseBody = new StreamReader(responseBodyStream).ReadToEnd();
+
+            requestBodyStream.Seek(0, SeekOrigin.Begin);
+            logEntry.RequestBody = await new StreamReader(requestBodyStream).ReadToEndAsync();
+
+            if (context.Response.ContentType != null && context.Response.ContentType.Contains("application/json"))
+            {
+                responseBodyStream.Seek(0, SeekOrigin.Begin);
+                logEntry.ResponseBody = await new StreamReader(responseBodyStream).ReadToEndAsync();
+            }
+
+            responseBodyStream.Seek(0, SeekOrigin.Begin);
+            await responseBodyStream.CopyToAsync(originalBodyStream);
 
             await _kafkaProducer.ProduceAsync(logEntry);
         }
