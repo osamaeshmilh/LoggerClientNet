@@ -1,10 +1,8 @@
-using System.Threading.Tasks;
 using LoggerClient.Models;
 
-namespace LoggerClient.Kafka
+namespace LoggerClient.Kafka;
+
+public interface IKafkaProducer
 {
-    public interface IKafkaProducer
-    {
-        Task ProduceAsync(LogEntry logEntry);
-    }
+    Task ProduceAsync(LogEntry logEntry);
 }
