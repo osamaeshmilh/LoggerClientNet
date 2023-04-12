@@ -20,7 +20,7 @@ namespace LoggerClient.Kafka
 
         public async Task ProduceAsync(LogEntry logEntry)
         {
-            string messageKey = logEntry.Timestamp.ToString("O");
+            string messageKey = logEntry.request_timestamp.ToString("O") + "-" + Guid.NewGuid().ToString();
             string messageValue = JsonConvert.SerializeObject(logEntry);
 
             await _producer.ProduceAsync(_topic, new Message<string, string>

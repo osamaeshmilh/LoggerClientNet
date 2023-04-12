@@ -33,25 +33,27 @@ namespace LoggerClient.Middleware
             await _next(context);
             stopwatch.Stop();
 
-            logEntry.Timestamp = DateTime.UtcNow;
-            logEntry.HttpMethod = context.Request.Method;
-            logEntry.RequestUrl = context.Request.Path;
-            logEntry.RequestUrlParameters = context.Request.QueryString.ToString();
-            logEntry.HttpStatusCode = context.Response.StatusCode;
-            logEntry.RemoteIpAddress = context.Connection.RemoteIpAddress.ToString();
-            logEntry.Duration = stopwatch.ElapsedMilliseconds;
-            logEntry.RequestHeaders = JsonConvert.SerializeObject(context.Request.Headers);
-            logEntry.ResponseHeaders = JsonConvert.SerializeObject(context.Response.Headers);
-            logEntry.RequestCookies = JsonConvert.SerializeObject(context.Request.Cookies);
-            logEntry.ResponseCookies = JsonConvert.SerializeObject(context.Response.Cookies);
+            logEntry.request_timestamp = DateTime.UtcNow;
+            logEntry.http_method = context.Request.Method;
+            logEntry.request_url = context.Request.Path;
+            logEntry.request_url_parameters = context.Request.QueryString.ToString();
+            logEntry.http_status_code = context.Response.StatusCode.ToString();
+            logEntry.remote_ip_address = context.Connection.RemoteIpAddress.ToString();
+            logEntry.duration = stopwatch.ElapsedMilliseconds;
+            logEntry.request_headers = JsonConvert.SerializeObject(context.Request.Headers);
+            logEntry.response_headers = JsonConvert.SerializeObject(context.Response.Headers);
+            logEntry.request_cookies = JsonConvert.SerializeObject(context.Request.Cookies);
+            logEntry.response_cookies = JsonConvert.SerializeObject(context.Response.Cookies);
+            //TODO:: application token
+            logEntry.application_id = 1;
 
             requestBodyStream.Seek(0, SeekOrigin.Begin);
-            logEntry.RequestBody = await new StreamReader(requestBodyStream).ReadToEndAsync();
+            logEntry.request_body = await new StreamReader(requestBodyStream).ReadToEndAsync();
 
             if (context.Response.ContentType != null && context.Response.ContentType.Contains("application/json"))
             {
                 responseBodyStream.Seek(0, SeekOrigin.Begin);
-                logEntry.ResponseBody = await new StreamReader(responseBodyStream).ReadToEndAsync();
+                logEntry.response_body = await new StreamReader(responseBodyStream).ReadToEndAsync();
             }
 
             responseBodyStream.Seek(0, SeekOrigin.Begin);
