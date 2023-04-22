@@ -32,6 +32,11 @@ public class HttpLoggingMiddleware
     {
         var applicationId = await _applicationAuthenticator.GetApplicationIdByTokenAsync(_configuration.AppToken);
 
+        if (applicationId == null)
+        {
+            Console.WriteLine("No Application Id");
+            return;
+        }
         var logEntry = new LogEntry();
 
         var requestBodyStream = new MemoryStream();

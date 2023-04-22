@@ -6,6 +6,7 @@ namespace LoggerClient.Authentication;
 public class ApplicationAuthenticator
 {
     private readonly string _authEndpoint;
+    private long? _cachedApplicationId;
 
     public ApplicationAuthenticator(LoggerClientConfiguration configuration)
     {
@@ -14,7 +15,11 @@ public class ApplicationAuthenticator
 
     public async Task<long?> GetApplicationIdByTokenAsync(string token)
     {
-        Console.WriteLine($"{_authEndpoint}/api/application/get-application-by-token?token={token}");
+        if (_cachedApplicationId.HasValue)
+        {
+            return _cachedApplicationId;
+        }
+
         using var httpClient = new HttpClient();
         var response =
             await httpClient.GetAsync($"{_authEndpoint}/api/application/get-application-by-token?token={token}");
@@ -23,6 +28,7 @@ public class ApplicationAuthenticator
 
         var jsonResponse = await response.Content.ReadAsStringAsync();
         var application = JObject.Parse(jsonResponse);
-        return application["id"].Value<long>();
+        _cachedApplicationId = application["id"].Value<long>();
+        return _cachedApplicationId;
     }
 }
