@@ -137,4 +137,4 @@ Issues and pull requests are welcome at [github.com/osamaeshmilh/LoggerClientNet
 
 ## License
 
-Released under the [MIT License](LICENSE). Copyright (c) 2023-2026 Osama Eshmilh.
+Released under the [MIT License](LICENSE). Copyright (c) 2023-2026 Osama Eshmilh, Nitish Kumar Gupta.
